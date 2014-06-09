@@ -4,22 +4,17 @@ using System.Collections;
 
 public class Boid : MonoBehaviour {
 	
-	public Vector3 position = Vector3.zero;
-	public Vector3 velocity = new Vector3(-1, -2);
-	private float mass = 5.0f;
+	private Vector3 velocity = Vector3.zero;
+	private float mass = 30.0f;
 	public SteeringBehavior steering;
 	
 	void Awake() {
 		steering.Init(this);
-		position = transform.position;
 	}
 	
 	public void Init(float posX, float posY, float totalMass) {
-		position 	= new Vector3(posX, posY);
-		velocity 	= new Vector3(-1, -2);
 		mass	 	= totalMass;
 		// steering 	= new SteeringManager(this);
-		transform.position = position;
 		// x = position.x;
 		// y = position.y;
 	}
@@ -43,7 +38,7 @@ public class Boid : MonoBehaviour {
 		// y = position.y;
 		
 		// Adjust boid rodation to match the velocity vector.
-		// transform.rotation = 90 + (180 * getAngle(velocity)) / Mathf.PI;
+		transform.rotation = Quaternion.Euler(new Vector3(90 + (180 * GetAngle(velocity)) / Mathf.PI, transform.rotation.y, transform.rotation.z));
 		
 		// if (position.x < 0 || position.x > Screen.width || position.y < 0 || position.y > Screen.height) {
 		// 	Reset();
@@ -51,15 +46,15 @@ public class Boid : MonoBehaviour {
 	}
 	
 	public void Reset() {
-		transform.position = position = new Vector3(Screen.width / 2, Screen.height / 2);
 	}
 	
-	public Vector3 GetVelocity() {
-		return velocity;
+	public Vector3 Velocity {
+		get {return velocity;}
+		set {velocity = value;}
 	}
 	
 	public float GetMaxVelocity() {
-		return 1;
+		return 0.5f;
 	}
 	
 	public Vector3 GetPosition() {
@@ -67,7 +62,6 @@ public class Boid : MonoBehaviour {
 	}
 	
 	public float GetMass() {
-		Debug.Log("GetMass " + mass);
 		return mass;
 	}
 }

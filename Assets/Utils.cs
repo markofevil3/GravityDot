@@ -12,6 +12,7 @@ public class Utils : MonoBehaviour {
 		float i;
 		i = max / vector.magnitude;
 		i = i < 1.0f ? i : 1.0f;
+		
 		return vector * i;
 	}
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class SteeringBehavior : MonoBehaviour {
 
-	public const float MAX_FORCE = 1.0f;
+	public const float MAX_FORCE = 0.5f;
 	
 	// Wander
 	public const float CIRCLE_DISTANCE = 6.0f;
@@ -29,12 +29,11 @@ public class SteeringBehavior : MonoBehaviour {
 		this.desired		= new Vector3(0, 0); 
 		this.steering 		= new Vector3(0, 0); 
 		this.wanderAngle 	= 0; 
-		host.velocity = Utils.Truncate(host.GetVelocity(), host.GetMaxVelocity());
+		host.Velocity = Utils.Truncate(host.Velocity, host.GetMaxVelocity());
 	}
 	
-	public void Seek(Vector3 target, float slowingRadius = 5.0f) {
+	public void Seek(Vector3 target, float slowingRadius = 0) {
 		steering += DoSeek(target, slowingRadius);
-		Debug.Log("Seek " + steering);
 	}
 	
 	public void Flee(Vector3 target) {
@@ -68,8 +67,7 @@ public class SteeringBehavior : MonoBehaviour {
 			desired *= host.GetMaxVelocity();
 		}
 		
-		force = desired - host.GetVelocity();
-		
+		force = desired - host.Velocity;
 		return force;
 	}
 	
@@ -80,7 +78,7 @@ public class SteeringBehavior : MonoBehaviour {
 		desired = desired.normalized;
 		desired *= host.GetMaxVelocity();
 		
-		force = desired - host.GetVelocity();
+		force = desired - host.Velocity;
 		
 		return force;
 	}
@@ -90,7 +88,7 @@ public class SteeringBehavior : MonoBehaviour {
 		Vector3 circleCenter;
 		Vector3 displacement;
 		
-		circleCenter = host.GetVelocity();
+		circleCenter = host.Velocity;
 		circleCenter = circleCenter.normalized;
 		circleCenter *= CIRCLE_DISTANCE;
 		
@@ -109,7 +107,7 @@ public class SteeringBehavior : MonoBehaviour {
 		
 		float updatesNeeded = distance.magnitude / host.GetMaxVelocity();
 		
-		Vector3 tv = target.GetVelocity();
+		Vector3 tv = target.Velocity;
 		tv *= updatesNeeded;
 		
 		targetFuturePosition = target.GetPosition() + tv;
@@ -122,7 +120,7 @@ public class SteeringBehavior : MonoBehaviour {
 		
 		float updatesNeeded = distance.magnitude / host.GetMaxVelocity();
 		
-		Vector3 tv = target.GetVelocity();
+		Vector3 tv = target.Velocity;
 		tv *= updatesNeeded;
 		
 		targetFuturePosition = target.GetPosition() - tv;
@@ -141,14 +139,16 @@ public class SteeringBehavior : MonoBehaviour {
 	}
 	
 	public void DoUpdate() {
-		Vector3 velocity = host.GetVelocity();
+		Vector3 velocity = host.Velocity;
 		Vector3 position = host.GetPosition();
 		steering = Utils.Truncate(steering, MAX_FORCE);
 		steering *= 1 / host.GetMass();		
-		velocity += steering;		
+		velocity += steering;
 		velocity = Utils.Truncate(velocity, host.GetMaxVelocity());
+		host.Velocity = velocity;
 		
 		transform.position += velocity;
+
 	}
 	
 	public void Reset() {
