@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class SteeringManager : MonoBehaviour {
+public class SteeringBehavior : MonoBehaviour {
 
 	public const float MAX_FORCE = 1.0f;
 	

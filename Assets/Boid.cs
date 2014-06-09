@@ -7,7 +7,7 @@ public class Boid : MonoBehaviour {
 	public Vector3 position = Vector3.zero;
 	public Vector3 velocity = new Vector3(-1, -2);
 	private float mass = 5.0f;
-	public SteeringManager steering;
+	public SteeringBehavior steering;
 	
 	void Awake() {
 		steering.Init(this);
