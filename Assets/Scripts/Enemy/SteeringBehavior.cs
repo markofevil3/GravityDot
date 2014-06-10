@@ -55,7 +55,6 @@ public class SteeringBehavior : MonoBehaviour {
 	private Vector3 DoSeek(Vector3 target, float slowingRadius = 0) {
 		Vector3 force;
 		float distance;
-		
 		desired = target - host.GetPosition();
 		
 		distance = desired.magnitude;

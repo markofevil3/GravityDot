@@ -30,8 +30,17 @@ public class Boid : MonoBehaviour {
 	
 	public void Update() {
 	  if (start) {
-  		steering.Seek(GameObject.Find("Ship").transform.position);
-  		steering.DoUpdate();
+	    if (isCollision) {
+	      Debug.Log("Update Bounce");
+	      Vector2 normal = velocity - Vector3.one;
+        normal.Normalize();
+	      velocity += Vector3.Reflect(velocity, normal);
+	      velocity = Utils.Truncate(velocity, GetMaxVelocity());
+	      transform.position += velocity;
+	    } else {
+	      steering.Seek(GameObject.Find("Ship").transform.position);
+    		steering.DoUpdate();
+	    }
 
   		// transform.position = position;
 
@@ -45,6 +54,18 @@ public class Boid : MonoBehaviour {
   		// 	Reset();
   		// }
 	  }
+	}
+	
+	private bool isCollision = false;
+	
+	void OnTriggerEnter() {
+	  Debug.Log("OnTriggerEnter");
+	  isCollision = true;
+    // Invoke("StopCollision", 0.1f);
+	}
+	
+	void OnTriggerExit() {
+	  isCollision = false;
 	}
 	
 	public void Reset() {
