@@ -30,8 +30,10 @@ public class Boid : MonoBehaviour {
 	
 	Vector3 reflect = Vector3.zero;
 	int reflectWallIndex = -1;
+	float tempX;
+	float tempY;
 	
-	public void Update() {
+	public void LateUpdate() {
 	  if (start) {
 	    if (isCollision) {
 	      // Vector2 normal = velocity - Vector3.one;
@@ -39,26 +41,37 @@ public class Boid : MonoBehaviour {
 	      // velocity += Vector3.Reflect(velocity, normal);
 	      // velocity = Utils.Truncate(velocity, GetMaxVelocity());
 				if (reflect == Vector3.zero && reflectWallIndex != -1) {
-					Vector3 normalized = EnemyManager.Instance.wallsNormalized[reflectWallIndex];
+					Vector3 normalized = EnemyManager.wallsNormalized[reflectWallIndex];
 					float dot = Vector3.Dot(velocity, normalized);
 					reflect = velocity * -1.0f + 2 * dot * normalized;
 					reflect *= 0.7f;
 					velocity = reflect;
+					velocity = Utils.Truncate(velocity, GetMaxVelocity());
+					
 				}
-
-				Debug.Log("Update Bounce " + velocity);
 	      
 	      transform.position += velocity;
 	    } else {
 	      steering.Seek(GameObject.Find("Ship").transform.position);
     		steering.DoUpdate();
 	    }
-
-  		// transform.position = position;
-
-  		// x = position.x;
-  		// y = position.y;
-
+	
+			// Keep object inside screen
+			tempX = transform.position.x;
+			tempY = transform.position.y;
+			if (transform.position.x - transform.renderer.bounds.extents.x < EnemyManager.screenCornersPos[0].x) {
+				tempX = EnemyManager.screenCornersPos[0].x + transform.renderer.bounds.extents.x;
+			}
+			if (transform.position.x + transform.renderer.bounds.extents.x> EnemyManager.screenCornersPos[1].x) {
+				tempX = EnemyManager.screenCornersPos[1].x - transform.renderer.bounds.extents.x;
+			}
+			if (transform.position.y + transform.renderer.bounds.extents.y > EnemyManager.screenCornersPos[0].y) {
+				tempY = EnemyManager.screenCornersPos[0].y - transform.renderer.bounds.extents.y;
+			}
+			if (transform.position.y - transform.renderer.bounds.extents.y < EnemyManager.screenCornersPos[2].y) {
+				tempY = EnemyManager.screenCornersPos[2].y + transform.renderer.bounds.extents.y;
+			}
+			transform.position = new Vector3(tempX, tempY, transform.position.z);
   		// Adjust boid rodation to match the velocity vector.
       // transform.rotation = Quaternion.Euler(new Vector3(90 + (180 * GetAngle(velocity)) / Mathf.PI, transform.rotation.y, transform.rotation.z));
 
@@ -79,6 +92,8 @@ public class Boid : MonoBehaviour {
 	}
 	
 	void OnTriggerExit() {
+		Debug.Log("OnTriggerExit " + reflectWallIndex);
+	  
 		reflect = Vector3.zero;
 		reflectWallIndex = -1;
 	  isCollision = false;

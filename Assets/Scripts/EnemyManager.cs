@@ -10,19 +10,22 @@ public class EnemyManager : MonoBehaviour {
 		RIGHT
 	}
 
-	public static EnemyManager Instance;
-
   public GameObject[] listEnemyPrefabs;
 	public Camera gameCamera;
 	// public Transform[] walls;
-	public Vector3[] wallsNormalized = new Vector3[4];
+	public static Vector3[] wallsNormalized = new Vector3[4];
+	public static Vector3[] screenCornersPos = new Vector3[4];
 
 	void Start () {
-		Instance = this;
-		wallsNormalized[(int)WALL.TOP] = (gameCamera.ViewportToWorldPoint(new Vector3(0,1,0)) - gameCamera.ViewportToWorldPoint(new Vector3(1,1,0))).normalized;
-		wallsNormalized[(int)WALL.BOTTOM] = (gameCamera.ViewportToWorldPoint(new Vector3(0,0,0)) - gameCamera.ViewportToWorldPoint(new Vector3(1,0,0))).normalized;
-		wallsNormalized[(int)WALL.LEFT] = (gameCamera.ViewportToWorldPoint(new Vector3(0,0,0)) - gameCamera.ViewportToWorldPoint(new Vector3(0,1,0))).normalized;
-		wallsNormalized[(int)WALL.RIGHT] = (gameCamera.ViewportToWorldPoint(new Vector3(1,0,0)) - gameCamera.ViewportToWorldPoint(new Vector3(1,1,0))).normalized;
+		Vector3 topLeft = screenCornersPos[0] = gameCamera.ViewportToWorldPoint(new Vector3(0,1,0));
+		Vector3 topRight = screenCornersPos[1] = gameCamera.ViewportToWorldPoint(new Vector3(1,1,0));
+		Vector3 bottomLeft = screenCornersPos[2] = gameCamera.ViewportToWorldPoint(new Vector3(0,0,0));
+		Vector3 bottomRight = screenCornersPos[3] = gameCamera.ViewportToWorldPoint(new Vector3(1,0,0));
+		
+		wallsNormalized[(int)WALL.TOP] = (topLeft - topRight).normalized;
+		wallsNormalized[(int)WALL.BOTTOM] = (bottomLeft - bottomRight).normalized;
+		wallsNormalized[(int)WALL.LEFT] = (bottomLeft - topLeft).normalized;
+		wallsNormalized[(int)WALL.RIGHT] = (bottomRight - topRight).normalized;
 		
 	  for (int i = 0; i < 1; i++) {
 			// recheck spawn pos with object radius
