@@ -28,14 +28,26 @@ public class Boid : MonoBehaviour {
 		return Mathf.Atan2(vector.y, vector.x);
 	}
 	
+	Vector3 reflect = Vector3.zero;
+	int reflectWallIndex = -1;
+	
 	public void Update() {
 	  if (start) {
 	    if (isCollision) {
-	      Debug.Log("Update Bounce");
-	      Vector2 normal = velocity - Vector3.one;
-        normal.Normalize();
-	      velocity += Vector3.Reflect(velocity, normal);
-	      velocity = Utils.Truncate(velocity, GetMaxVelocity());
+	      // Vector2 normal = velocity - Vector3.one;
+	      //         normal.Normalize();
+	      // velocity += Vector3.Reflect(velocity, normal);
+	      // velocity = Utils.Truncate(velocity, GetMaxVelocity());
+				if (reflect == Vector3.zero && reflectWallIndex != -1) {
+					Vector3 normalized = EnemyManager.Instance.wallsNormalized[reflectWallIndex];
+					float dot = Vector3.Dot(velocity, normalized);
+					reflect = velocity * -1.0f + 2 * dot * normalized;
+					reflect *= 0.7f;
+					velocity = reflect;
+				}
+
+				Debug.Log("Update Bounce " + velocity);
+	      
 	      transform.position += velocity;
 	    } else {
 	      steering.Seek(GameObject.Find("Ship").transform.position);
@@ -58,13 +70,17 @@ public class Boid : MonoBehaviour {
 	
 	private bool isCollision = false;
 	
-	void OnTriggerEnter() {
-	  Debug.Log("OnTriggerEnter");
-	  isCollision = true;
-    // Invoke("StopCollision", 0.1f);
+	void OnTriggerEnter(Collider other) {
+	  Debug.Log("OnTriggerEnter " + other.gameObject.name);
+		if (other.gameObject.name != "Ship") {
+			reflectWallIndex = int.Parse(other.gameObject.name);
+		  isCollision = true;
+		}
 	}
 	
 	void OnTriggerExit() {
+		reflect = Vector3.zero;
+		reflectWallIndex = -1;
 	  isCollision = false;
 	}
 	
